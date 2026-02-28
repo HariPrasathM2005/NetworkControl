@@ -10,7 +10,6 @@ BLOCKED_SITES = [
     "www.instagram.com",
     "crazygames.com",
     "www.crazygames.com",
-    "crazygames",
     "www.facebook.com",
     "facebook.com",
     "friv.com",
@@ -44,19 +43,48 @@ def unblock_websites():
     os.system("resolvectl flush-caches")
 
 
-@app.route("/")
+def get_blocked_sites():
+    blocked = []
+
+    with open(HOSTS_FILE, "r") as file:
+        for line in file:
+            for site in BLOCKED_SITES:
+                if site in line and line.startswith(REDIRECT_IP):
+                    blocked.append(site)
+
+    return blocked
+
+@app.route("/", methods=["GET"])
 def home():
     return "Backend running with network control"
 
 
+@app.route("/blocked-sites", methods=["GET"])
+def blocked_sites():
+    return jsonify({
+        "blocked_sites": get_blocked_sites()
+    })
+
+
+
+
 @app.route("/set-mode", methods=["POST"])
 def set_mode():
-    data = request.json
+    data = request.get_json(force=True)
     mode = data.get("mode")
+
+    print("Mode received:", mode)
 
     if mode == "study":
         block_websites()
-        return jsonify({"message": "Study mode enabled. Websites blocked."})
+        blocked_entries = []
+        for site in BLOCKED_SITES:
+            blocked_entries.append(f"{REDIRECT_IP} {site}")
+
+        return jsonify({
+            "message": "Study mode enabled. Websites blocked.",
+            "blocked_sites": blocked_entries
+        })
 
     elif mode == "entertainment":
         unblock_websites()
@@ -66,6 +94,22 @@ def set_mode():
         return jsonify({"error": "Invalid mode"}), 400
 
 
+
+@app.route("/add-sites", methods=["POST"])
+def add_sites():
+    data = request.get_json()
+    new_sites = data.get("sites", [])
+
+    print("New sites received:", new_sites)
+
+    for site in new_sites:
+        if site not in BLOCKED_SITES:
+            BLOCKED_SITES.append(site)
+
+    return jsonify({
+        "message": "New sites added successfully",
+        "blocked_sites": BLOCKED_SITES
+    })
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-    print("Mode received:", mode)
