@@ -106,8 +106,30 @@ def add_sites():
         if site not in BLOCKED_SITES:
             BLOCKED_SITES.append(site)
 
+    unblock_websites()
+    block_websites()
+
+
     return jsonify({
         "message": "New sites added successfully",
+        "blocked_sites": BLOCKED_SITES
+    })
+
+
+@app.route("/remove-site", methods=["POST"])
+def remove_site():
+    data = request.get_json()
+    site_to_remove = data.get("site")
+
+    if site_to_remove in BLOCKED_SITES:
+        BLOCKED_SITES.remove(site_to_remove)
+
+    # rewrite hosts file
+    unblock_websites()
+    block_websites()
+
+    return jsonify({
+        "message": "Site removed successfully",
         "blocked_sites": BLOCKED_SITES
     })
 

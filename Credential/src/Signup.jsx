@@ -1,34 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { useState,useEffect } from 'react'
-function Home(){
+function Signup()
+{
     const navigate = useNavigate()
-
     const [name,setName]=useState('')
     const [password,setPassword]=useState('')
     const [staff,setStaff]=useState([])
 
-
-
-    const handleSubmit = () => {
-            if (!name || !password) return 
-
-            // check if staff exists
-            const exists = staff.find(
-            s => s.name === name && s.password === password
-            )
-
-            if (exists) {
-            navigate("/Staff")   
-            } else {
-            alert("Invalid credentials")
-            }
-        }
-        useEffect(()=>{
-            const List=JSON.parse(localStorage.getItem("staff"))||[];
-            setStaff(List);
-        },[]);
-
-        const handleSignup = () => {
+    const handleSignup = () => {
             if (!name) return
             const Staff={
             name,
@@ -45,27 +24,27 @@ function Home(){
 
             setName('');
             setPassword('');
-        }
-
-    const moveSignup=()=>{
-        navigate('/Signup')
     }
-   
+
+    const moveBack=()=>{
+        navigate('/')
+    }
+
     return(
         <div
             style={{
-                backgroundColor: "#81868b5e",   // 👈 page background
+                backgroundColor: "#81868b5e",  
                 minHeight: "100vh",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center"
             }}
         >
-        <div className='Homepage'>
+        <div className='SignupPage'>
             <p style={{ width: "300px", margin: "10px auto", textAlign: "center",color:"purple",
                         fontWeight: 900
             }}
-                >Enter UserName and Password</p>
+                >Create Account</p>
             <input
                 type='text'
                 placeholder='Username'
@@ -84,19 +63,19 @@ function Home(){
 
 
             <button
-                onClick={handleSubmit}
+                onClick={handleSignup}
                 style={{ width: "100%", padding: "10px",marginTop:"20px"}}
             >
-                Login
-            </button>        
+                Create
+            </button>
             <button
-                onClick={moveSignup}
+                onClick={moveBack}
                 style={{ width: "100%", padding: "10px",marginTop:"20px"}}
             >
-                Sign Up
+                Back
             </button>
         </div>
         </div>
     )
 }
-export default Home
+export default Signup;

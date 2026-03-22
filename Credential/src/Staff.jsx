@@ -12,6 +12,9 @@ function Staff()
     const moveAdd=()=>{
         navigate('/Sites')
     }
+    const moveRemove=()=>{
+        navigate('/Remove')
+    }
 
 
     const setMode = async (mode) => {
@@ -66,6 +69,12 @@ function Staff()
                     style={{width: "100%", padding: "10px",marginBottom:"10px"}}
             >
                 Add Sites to block
+            </button>
+
+            <button onClick={moveRemove}
+                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
+            >
+                Remove sites
             </button>
 
             <button onClick={moveBack}
