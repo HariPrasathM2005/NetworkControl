@@ -10,25 +10,42 @@ function Home(){
 
 
     const handleSubmit = () => {
-        if (!name || !password) return 
+            if (!name || !password) return 
 
-        // check if staff exists
-        const exists = staff.find(
-        s => s.name === name && s.password === password
-        )
+            // check if staff exists
+            const exists = staff.find(
+            s => s.name === name && s.password === password
+            )
 
-        if (exists) {
-        navigate("/Staff")   
-        } else {
-        alert("Invalid credentials")
+            if (exists) {
+            navigate("/Staff")   
+            } else {
+            alert("Invalid credentials")
+            }
         }
-    }
-    useEffect(()=>{
-        const List=JSON.parse(localStorage.getItem("staff"))||[];
-        setStaff(List);
-    },[]);
+        useEffect(()=>{
+            const List=JSON.parse(localStorage.getItem("staff"))||[];
+            setStaff(List);
+        },[]);
 
+        const handleSignup = () => {
+            if (!name) return
+            const Staff={
+            name,
+            password
+            };
+            //JSON.parse - change from JSON format to our structure format
+            const ExistingStaff=JSON.parse(localStorage.getItem("staff"))||[];
 
+            ExistingStaff.push(Staff);
+
+            //JSON.stringify - change JavaScript value to JSON format
+            localStorage.setItem("staff",JSON.stringify(ExistingStaff));
+            setStudent(ExistingStaff);
+
+            setName('');
+            setPassword('');
+        }
    
     return(
         <div
@@ -69,6 +86,7 @@ function Home(){
                 Login
             </button>        
             <button
+                onClick={handleSignup}
                 style={{ width: "100%", padding: "10px",marginTop:"20px"}}
             >
                 Sign Up
