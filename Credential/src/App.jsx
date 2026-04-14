@@ -20,11 +20,9 @@ function App() {
       <Route path="/Mode" element={<ModesPage/>}/>
       <Route path="/AddorRemove" element={<AddorRemovePage/>}/>
       <Route path="/Display" element={<DisplayPage/>}/>
-      <Route path="./Schedule" element={<SchedulingPage/>}/>
+      <Route path="/Schedule" element={<SchedulingPage/>}/>
     </Routes>
   )
-  
-
 }
 
 export default App

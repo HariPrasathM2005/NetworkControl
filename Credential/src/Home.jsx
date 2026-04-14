@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState,useEffect } from 'react'
+import './Frontend.css';
 function Home(){
     const navigate = useNavigate()
 
@@ -61,11 +62,10 @@ function Home(){
                 alignItems: "center"
             }}
         >
-        <div className='Homepage'>
-            <p style={{ width: "300px", margin: "10px auto", textAlign: "center",color:"purple",
-                        fontWeight: 900
-            }}
-                >Enter UserName and Password</p>
+        <div
+            className='Homepage' 
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px" }}>
+            <h1 className="heading">Enter Username and Password</h1>
             <input
                 type='text'
                 placeholder='Username'
@@ -83,20 +83,24 @@ function Home(){
             />
 
 
-            <button
-                onClick={handleSubmit}
-                style={{ width: "100%", padding: "10px",marginTop:"20px"}}
-            >
-                Login
-            </button>        
-            <button
-                onClick={moveSignup}
-                style={{ width: "100%", padding: "10px",marginTop:"20px"}}
-            >
-                Sign Up
-            </button>
+            
+                <button
+                    onClick={handleSubmit}
+                    className='btn btn-purple'
+                    style={{ width: "100%", maxWidth: "260px"}}
+                >
+                    Login
+                </button>        
+                <button
+                    onClick={moveSignup}
+                    className='btn btn-yellow'
+                    style={{ width: "100%", maxWidth: "260px"}}
+                >
+                    Sign Up
+                </button>
+            </div>
         </div>
-        </div>
+        
     )
 }
 export default Home

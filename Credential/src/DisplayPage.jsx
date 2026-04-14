@@ -17,6 +17,7 @@ function DisplayPage()
             })
             .catch(err => console.error(err))
         }, [])
+           
     return(
         <div>
             <p>Display Page</p>

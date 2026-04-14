@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useState,useEffect } from 'react'
 import bg from "./ControlPage.jpg"
+import './Frontend.css';
 function Staff()
 {
     const navigate=useNavigate();
@@ -20,6 +21,9 @@ function Staff()
         navigate("/Display")
     }
 
+    const moveScheduling=()=>{
+        navigate("/Schedule")
+    }
 
     const moveBack=()=>{
         navigate('/')
@@ -27,6 +31,7 @@ function Staff()
 
     return(
         <div
+        
             style={{
                 backgroundImage: `url(${bg})`,
                 backgroundSize: "cover",
@@ -45,55 +50,60 @@ function Staff()
             borderRadius: "15px", 
             padding: "40px", 
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)" }}>
+                
             <h2 style={{ color: '#6b46c1', fontWeight: 900, textAlign: "center", marginBottom: "35px", fontSize: "28px", letterSpacing: "0.5px" }}>
                     Teacher Control Panel
                 </h2>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+                <button
+                    onClick={moveMode}
+                    className='btn btn-purple'
+                    style={{ width: "100%", maxWidth: "260px" }}
+                >
+                    Select Mode 
+                </button>
+
+                <button onClick={moveAddorRemove}
+                    className='btn btn-yellow'
+                    style={{ width: "100%", maxWidth: "260px" }}
+                >
+                    Add/Remove Sites
+                </button>
+
+                <button onClick={moveScheduling}
+                    className='btn btn-back'
+                    style={{ width: "100%", maxWidth: "260px" }}
+                >
+                    Scheduling
+                </button>
+
+                <button onClick={moveDisplay}
+                    className='btn btn-red'
+                    style={{ width: "100%", maxWidth: "260px" }}
+                >
+                    Display
+                </button>
+
+                <button onClick={moveAddorRemove}
+                    className='btn btn-yellow'
+                    style={{ width: "100%", maxWidth: "260px" }}
+                >
+                    Edit
+                </button>
             
-
-            <button
-                onClick={moveMode}
-                style={{ width: "100%", padding: "10px", marginBottom: "10px"}}
-            >
-                Select Mode 
-            </button>
-
-            <button onClick={moveAddorRemove}
-                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-            >
-                Add/Remove Sites
-            </button>
-
-            <button onClick={moveAddorRemove}
-                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-            >
-                Scheduling
-            </button>
-
-            <button onClick={moveDisplay}
-                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-            >
-                Display
-            </button>
-
-            <button onClick={moveAddorRemove}
-                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-            >
-                Edit
-            </button>
-
-            <button onClick={moveBack}
-                    style={{ width: "100%", padding: "10px", marginBottom: "10px"}}   
-            >
-                Back
-            </button>
-
-
+                <button onClick={moveBack}
+                    className='btn btn-back'  
+                    style={{ width: "100%", maxWidth: "260px" }} 
+                >
+                    Back
+                </button>
+            </div>
 
             {status && (
                 <p style={{ marginTop: "20px", fontWeight: "bold" }}>
                     {status}
                 </p>
-                
             )}
             <ul>
                 {sites.map(site => (

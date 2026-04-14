@@ -1,6 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+import json
+
+import threading
+import time
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -19,6 +24,15 @@ BLOCKED_SITES = [
 HOSTS_FILE = "/etc/hosts"
 REDIRECT_IP = "127.0.0.1"
 
+SCHEDULE_FILE = "schedules.json"
+
+def load_schedules():
+    global schedules
+    try:
+        with open(SCHEDULE_FILE, "r") as f:
+            schedules = json.load(f)
+    except:
+        schedules = []
 
 def block_websites():
     with open(HOSTS_FILE, "r") as file:
@@ -53,7 +67,6 @@ def get_blocked_sites():
                     blocked.append(site)
 
     return blocked
-
 @app.route("/", methods=["GET"])
 def home():
     return "Backend running with network control"
@@ -80,6 +93,7 @@ def set_mode():
         blocked_entries = []
         for site in BLOCKED_SITES:
             blocked_entries.append(f"{REDIRECT_IP} {site}")
+        print("Websites blocked:", blocked_entries)
 
         return jsonify({
             "message": "Study mode enabled. Websites blocked.",
@@ -133,5 +147,91 @@ def remove_site():
         "blocked_sites": BLOCKED_SITES
     })
 
+@app.route("/set-schedule", methods=["POST"])
+def schedule():
+    try:
+        data = request.get_json(force=True)
+
+        mode = data.get("mode", "").lower()
+        startTime = data.get("startTime")
+        endTime = data.get("endTime")
+
+        if not mode or not startTime or not endTime:
+            return jsonify({"error": "Missing data"}), 400
+
+        if startTime >= endTime:
+            return jsonify({"error": "Invalid time range"}), 400
+
+        new_schedule = {
+            "mode": mode,
+            "startTime": startTime,
+            "endTime": endTime
+        }
+
+        schedules.append(new_schedule)
+
+        print("Schedule added:", new_schedule)
+
+        return jsonify({
+            "message": f"Schedule added for {mode}",
+            "schedules": schedules
+        })
+
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({"error": "Server error"}), 500
+
+
+
+current_active_mode = None  # to avoid repeated execution
+schedules = []
+def scheduler_loop():
+    global current_active_mode
+
+    while True:
+        now = datetime.now().strftime("%H:%M")
+        matched_modes = []
+
+        for s in schedules:
+            if s["startTime"] <= now <= s["endTime"]:
+                matched_modes.append(s["mode"])
+
+        # Priority logic
+        if "exam" in matched_modes:
+            active_mode = "exam"
+        elif "study" in matched_modes:
+            active_mode = "study"
+        elif "entertainment" in matched_modes:
+            active_mode = "entertainment"
+        else:
+            active_mode = None
+
+        if active_mode != current_active_mode:
+            current_active_mode = active_mode
+
+            if active_mode == "study":
+                print(" STUDY MODE")
+                block_websites()
+
+            elif active_mode == "entertainment":
+                print("ENTERTAINMENT MODE")
+                unblock_websites()
+
+            elif active_mode == "exam":
+                print("EXAM MODE")
+                block_websites()
+
+            else:
+                print("No active schedule")
+
+
+        time.sleep(10)
+
+# Start background thread
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    load_schedules()  # 🔥 IMPORTANT
+    print("Loaded schedules:", schedules)
+
+    threading.Thread(target=scheduler_loop, daemon=True).start()
+    app.run(port=5000, debug=False)

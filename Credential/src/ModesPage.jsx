@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { useState,useEffect } from 'react'
+import { useState } from 'react'
+import './Frontend.css';
 
 function ModesPage()
 {
@@ -31,32 +32,38 @@ function ModesPage()
         }
     }
     return(
-        <div>
-            <h2 style={{color:'purple',fontWeight:1000}}>Mode Selection</h2>
-            <button
-                onClick={() => setMode("study")}
-                style={{ width: "100%", position:'center', padding: "10px", marginBottom: "10px"}}
-            >
-                Study Mode
-            </button>
+        <div className="container">
+            <div className="box">
+                <h1 className='heading'>Mode Selection</h1>
+                <div className="button-group">
+                    <button
+                        onClick={() => setMode("study")}
+                        className="btn btn-back"
+                    >
+                        Study Mode
+                    </button>
 
-            <button
-                onClick={() => setMode("entertainment")}
-                style={{ width: "100%", padding: "10px", marginBottom: "10px"}}
-            >
-                Exam Mode
-            </button>
+                    <button
+                        onClick={() => setMode("entertainment")}
+                        className="btn btn-purple"
+                    >
+                        Exam Mode
+                    </button>
 
-            <button
-                onClick={() => setMode("entertainment")}
-                style={{ width: "100%", padding: "10px", marginBottom: "10px"}}
-            >
-                Entertainment Mode (Unblock Sites)
-            </button>
+                    <button
+                        onClick={() => setMode("entertainment")}
+                        className="btn btn-yellow"
+                    >
+                        Entertainment Mode (Unblock Sites)
+                    </button>
 
-            
-
-            <button onClick={moveBack}>Back</button>
+                    <button onClick={moveBack}
+                        className="btn btn-red"
+                    >
+                            Back
+                    </button>
+                </div>
+            </div>
         </div>
 
     )
