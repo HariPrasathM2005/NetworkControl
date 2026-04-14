@@ -6,81 +6,85 @@ function Staff()
     const navigate=useNavigate();
     const [status, setStatus] = useState("")
     const [sites, setSites]=useState([])
+    
+    const moveMode=()=>{
+        navigate("/Mode")
+    }
+
+
+    const moveAddorRemove=()=>{
+        navigate('/AddorRemove')
+    }
+
+    const moveDisplay=()=>{
+        navigate("/Display")
+    }
+
+
     const moveBack=()=>{
         navigate('/')
     }
-    const moveAdd=()=>{
-        navigate('/Sites')
-    }
-    const moveRemove=()=>{
-        navigate('/Remove')
-    }
 
-
-    const setMode = async (mode) => {
-        try {
-            const response = await fetch("http://localhost:5000/set-mode", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ mode })
-            })
-
-            const data = await response.json()
-            setStatus(data.message|| data.error)
-            setSites(data.blocked_sites||[])
-
-        } catch (error) {
-            setStatus("Backend not reachable")
-            console.error(error)
-        }
-    }
     return(
         <div
             style={{
                 backgroundImage: `url(${bg})`,
                 backgroundSize: "cover",
-                backgroundPosition: "center",   // 👈 page background
+                backgroundPosition: "center",
                 minHeight: "100vh",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center"
             }}
             >
-        <div className='Staffpage'>
-            <h2 style={{color:'purple',fontWeight:1000}}>Teacher Control Panel</h2>
+                
+        <div className='Staffpage' 
+            style={{ maxWidth: "450px", 
+            width: "100%", 
+            backgroundColor: "rgba(255, 255, 255, 0.95)", 
+            borderRadius: "15px", 
+            padding: "40px", 
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)" }}>
+            <h2 style={{ color: '#6b46c1', fontWeight: 900, textAlign: "center", marginBottom: "35px", fontSize: "28px", letterSpacing: "0.5px" }}>
+                    Teacher Control Panel
+                </h2>
+            
 
             <button
-                onClick={() => setMode("study")}
-                style={{ width: "100%", position:'center', padding: "10px", marginBottom: "10px"}}
-            >
-                Study Mode (Block Sites)
-            </button>
-
-            <button
-                onClick={() => setMode("entertainment")}
+                onClick={moveMode}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px"}}
             >
-                Entertainment Mode (Unblock Sites)
+                Select Mode 
             </button>
 
-            <button onClick={moveAdd}
-                    style={{width: "100%", padding: "10px",marginBottom:"10px"}}
-            >
-                Add Sites to block
-            </button>
-
-            <button onClick={moveRemove}
+            <button onClick={moveAddorRemove}
                     style={{width:"100%",padding:"10px",marginBottom:"10px"}}
             >
-                Remove sites
+                Add/Remove Sites
+            </button>
+
+            <button onClick={moveAddorRemove}
+                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
+            >
+                Scheduling
+            </button>
+
+            <button onClick={moveDisplay}
+                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
+            >
+                Display
+            </button>
+
+            <button onClick={moveAddorRemove}
+                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
+            >
+                Edit
             </button>
 
             <button onClick={moveBack}
                     style={{ width: "100%", padding: "10px", marginBottom: "10px"}}   
             >
-                    Back
+                Back
             </button>
 
 

@@ -3,8 +3,8 @@ import { useState,useEffect } from 'react'
 function AddSites(){
     const navigate=useNavigate()
 
-    const moveStaff=()=>{
-        navigate('/Staff')
+    const moveBack=()=>{
+        navigate('/AddorRemove')
     }
 
     const [site, setSite] = useState("")
@@ -68,7 +68,7 @@ function AddSites(){
 
             
 
-            <button onClick={moveStaff}
+            <button onClick={moveBack}
                     style={{width:"100%",padding:"10px"}}
             >
                 Back

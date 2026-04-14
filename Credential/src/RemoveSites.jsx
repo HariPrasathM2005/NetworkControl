@@ -3,8 +3,8 @@ import { useState,useEffect } from 'react'
 function RemoveSites(){
     const navigate=useNavigate()
 
-    const moveStaff=()=>{
-        navigate('/Staff')
+    const moveBack=()=>{
+        navigate('/AddorRemove')
     }
 
     const [sites, setSites] = useState([])
@@ -21,6 +21,7 @@ function RemoveSites(){
 
     const removeSiteHandler = async () => {
         if (!removeSite) return
+        alert("Please enter a site name")
 
         const updatedSites = sites.filter(s => s !== removeSite)
         setSites(updatedSites)
@@ -62,7 +63,7 @@ function RemoveSites(){
 
             
 
-            <button onClick={moveStaff}
+            <button onClick={moveBack}
                     style={{width:"100%",padding:"10px"}}
             >
                 Back
