@@ -53,51 +53,42 @@ function Home(){
     }
    
     return(
-        <div
-            style={{
-                backgroundColor: "#81868b5e",   // 👈 page background
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}
-        >
-        <div
-            className='Homepage' 
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px" }}>
-            <h1 className="heading">Enter Username and Password</h1>
-            <input
-                type='text'
-                placeholder='Username'
-                value={name}
-                onChange={(e)=>setName(e.target.value)}
-                style={{ width: "95%", padding: "10px",marginBottom:"20px"}}
-            />
-            <br></br>
-            <input
-                type='text'
-                placeholder='Password'
-                value={password}
-                onChange={(e)=>setPassword(e.target.value)}
-                style={{ width: "95%", padding: "10px",marginBotton:"20px"}}
-            />
+        <div className='container'>
+            <div className='box'>
+                <h1 className="heading">Enter Username and Password</h1>
 
-
-            
-                <button
-                    onClick={handleSubmit}
-                    className='btn btn-purple'
-                    style={{ width: "100%", maxWidth: "260px"}}
-                >
-                    Login
-                </button>        
-                <button
-                    onClick={moveSignup}
-                    className='btn btn-yellow'
-                    style={{ width: "100%", maxWidth: "260px"}}
-                >
-                    Sign Up
-                </button>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+                    <input
+                        type='text'
+                        placeholder='Username'
+                        value={name}
+                        onChange={(e)=>setName(e.target.value)}
+                        style={{ width: "95%", padding: "10px",marginBottom:"5px"}}
+                    />
+                    <br></br>
+                    <input
+                        type='text'
+                        placeholder='Password'
+                        value={password}
+                        onChange={(e)=>setPassword(e.target.value)}
+                        style={{ width: "95%", padding: "10px",marginBottom:"5px"}}
+                    />
+                    
+                    <button
+                        onClick={handleSubmit}
+                        className='btn btn-purple'
+                        style={{ width: "100%", maxWidth: "260px"}}
+                    >
+                        Login
+                    </button>        
+                    <button
+                        onClick={moveSignup}
+                        className='btn btn-yellow'
+                        style={{ width: "100%", maxWidth: "260px"}}
+                    >
+                        Sign Up
+                    </button>
+                </div>
             </div>
         </div>
         

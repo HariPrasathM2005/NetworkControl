@@ -9,6 +9,7 @@ import ModesPage from './ModesPage'
 import AddorRemovePage from './AddorRemovePage'
 import DisplayPage from './DisplayPage'
 import SchedulingPage from './SchedulingPage'
+import EditPage from './EditPage'
 function App() {
  return (
     <Routes>
@@ -21,6 +22,7 @@ function App() {
       <Route path="/AddorRemove" element={<AddorRemovePage/>}/>
       <Route path="/Display" element={<DisplayPage/>}/>
       <Route path="/Schedule" element={<SchedulingPage/>}/>
+      <Route path="/Edit" element={<EditPage/>}/>
     </Routes>
   )
 }

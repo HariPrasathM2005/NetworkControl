@@ -22,10 +22,10 @@ function AddorRemovePage()
                     <button className="btn btn-add" onClick={moveAdd}>
                         Add Sites
                     </button>
-                    <button className="btn btn-remove" onClick={moveRemove}>
+                    <button className="btn btn-back" onClick={moveRemove}>
                         Remove Sites
                     </button>
-                    <button className="btn btn-back" onClick={moveBack}>
+                    <button className="btn btn-remove" onClick={moveBack}>
                         Back
                     </button>
                 </div>

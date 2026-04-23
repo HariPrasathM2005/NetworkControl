@@ -1,11 +1,11 @@
 [
   {
     "mode": "study",
-    "startTime": "10:00",
+    "startTime": "7:00",
     "endTime": "11:00"
   },
     {
-    "mode": "entertainment",
+    "mode": "study",
     "startTime": "11:00",
     "endTime": "12:00"
     },
@@ -13,5 +13,20 @@
     "mode": "exam",
     "startTime": "12:00",
     "endTime": "13:00"
+  },
+  {
+    "mode": "study",
+    "startTime": "13:00",
+    "endTime": "17:00"
+  },
+  {
+    "mode": "entertainment",
+    "startTime": "17:00",
+    "endTime": "18:00"
+  },
+  {
+    "mode": "study",
+    "startTime": "18:00",
+    "endTime": "22:00"
   }
 ]

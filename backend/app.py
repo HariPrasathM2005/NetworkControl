@@ -28,11 +28,13 @@ SCHEDULE_FILE = "schedules.json"
 
 def load_schedules():
     global schedules
+    print("running")
     try:
         with open(SCHEDULE_FILE, "r") as f:
             schedules = json.load(f)
     except:
         schedules = []
+    return schedules
 
 def block_websites():
     with open(HOSTS_FILE, "r") as file:
@@ -65,6 +67,9 @@ def get_blocked_sites():
             for site in BLOCKED_SITES:
                 if site in line and line.startswith(REDIRECT_IP):
                     blocked.append(site)
+    print("Blocked sites: ", blocked)
+    if(blocked==[]):
+        print("No sites are currently blocked.")
 
     return blocked
 @app.route("/", methods=["GET"])
@@ -89,6 +94,12 @@ def set_mode():
     print("Mode received:", mode)
 
     if mode == "study":
+        os.system("sudo iptables -P OUTPUT ACCEPT")
+        os.system("sudo iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT")
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+        os.system("sudo iptables -A INPUT -i lo -j ACCEPT")
         block_websites()
         blocked_entries = []
         for site in BLOCKED_SITES:
@@ -102,7 +113,22 @@ def set_mode():
 
     elif mode == "entertainment":
         unblock_websites()
+        os.system("sudo iptables -P OUTPUT ACCEPT")
+        os.system("sudo iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT")
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+        os.system("sudo iptables -A INPUT -i lo -j ACCEPT")
         return jsonify({"message": "Entertainment mode enabled. Websites unblocked."})
+    
+    elif mode == "exam":
+        os.system("sudo iptables -P OUTPUT DROP")
+        os.system("sudo iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT")
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+        os.system("sudo iptables -A INPUT -i lo -j ACCEPT")
+        return jsonify({"message": "Exam mode enabled. All network traffic blocked."})
 
     else:
         return jsonify({"error": "Invalid mode"}), 400
@@ -119,6 +145,29 @@ def add_sites():
     for site in new_sites:
         if site not in BLOCKED_SITES:
             BLOCKED_SITES.append(site)
+
+    unblock_websites()
+    block_websites()
+
+
+    return jsonify({
+        "message": "New sites added successfully",
+        "blocked_sites": BLOCKED_SITES
+    })
+
+@app.route("/remove-sites", methods=["POST"])
+def remove_sites():
+    data = request.get_json()
+    new_sites = data.get("site")
+    new=[]
+
+    print("New sites received:", new_sites)
+
+    for site in BLOCKED_SITES:
+        if site not in new_sites:
+            new.append(site)
+    
+    BLOCKED_SITES=new
 
     unblock_websites()
     block_websites()
@@ -219,7 +268,7 @@ def scheduler_loop():
 
             elif active_mode == "exam":
                 print("EXAM MODE")
-                block_websites()
+                os.system("iptables -P OUTPUT DROP")
 
             else:
                 print("No active schedule")
@@ -230,8 +279,9 @@ def scheduler_loop():
 # Start background thread
 
 if __name__ == "__main__":
-    load_schedules()  # 🔥 IMPORTANT
-    print("Loaded schedules:", schedules)
+    schedule=load_schedules()  # IMPORTANT
+    print("Loaded schedules:", schedule)
+    #scheduler_loop()
 
     threading.Thread(target=scheduler_loop, daemon=True).start()
     app.run(port=5000, debug=False)

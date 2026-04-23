@@ -9,6 +9,7 @@ function RemoveSites(){
 
     const [sites, setSites] = useState([])
     const [removeSite, setRemoveSite] = useState("")
+    const [site, setSite] = useState("");
 
     useEffect(() => {
         fetch("http://localhost:5000/blocked-sites")
@@ -19,9 +20,48 @@ function RemoveSites(){
             .catch(err => console.error(err))
     }, [])
 
+
+    const removeSiteHandler2 = async () => {
+        if (!removeSite) {
+            alert("Please enter a site name");
+            return;
+        }
+
+        // check BEFORE deleting
+        if (!sites.includes(removeSite)) {
+            alert("Site not found in blocked list!");
+            return;
+        }
+
+        // update UI
+        const updatedSites = sites.filter(s => s !== removeSite);
+        setSites(updatedSites);
+
+        // backend call
+        try {
+            await fetch("http://localhost:5000/remove-sites", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ site: removeSite })
+            });
+
+            alert("Deleted " + removeSite);
+            setRemoveSite("");
+
+        } catch (err) {
+            console.error(err);
+            alert("Error deleting site");
+        }
+    };
+
     const removeSiteHandler = async () => {
-        if (!removeSite) return
-        alert("Please enter a site name")
+        if (!removeSite)
+            {
+                alert("Please enter a site name")
+                return
+            } 
+        
+        alert("Deleted " + removeSite)
 
         const updatedSites = sites.filter(s => s !== removeSite)
         setSites(updatedSites)
@@ -37,47 +77,32 @@ function RemoveSites(){
     }
 
     return(
-        <div
-            style={{
-                backgroundColor: "#81868b5e",   
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}
-        >
-        <div className='Homepage'>
-            <p>Add Sites to unblock</p>
-            <input 
-                    type='text'
-                    value={removeSite}
-                    placeholder=''
-                    onChange={(e)=>setRemoveSite(e.target.value)}
-            />
+        <div className="container">
+            <div className="box">
+                <h1 className='heading'>Add Sites to unblock</h1>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+                    <input 
+                            type='text'
+                            value={removeSite}
+                            placeholder=''
+                            onChange={(e)=>setRemoveSite(e.target.value)}
+                    />
 
-            <button onClick={removeSiteHandler}
-                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-            >
-                Activate
-            </button>
+                    <button onClick={removeSiteHandler2}
+                        className='btn btn-purple'
+                    >
+                        Activate
+                    </button>
 
-            
+                    
 
-            <button onClick={moveBack}
-                    style={{width:"100%",padding:"10px"}}
-            >
-                Back
-            </button>
-
-            <ul>
-                {sites.length === 0 && <li>Sites Blocked</li>}
-
-                {sites.map(site => (
-                    <li key={site}>{site}</li>
-                ))}
-            </ul>
-
-        </div>
+                    <button onClick={moveBack}
+                        className='btn btn-red'
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

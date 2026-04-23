@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState,useEffect } from 'react'
+import './Frontend.css';
 function Signup()
 {
     const navigate = useNavigate()
@@ -31,50 +32,42 @@ function Signup()
     }
 
     return(
-        <div
-            style={{
-                backgroundColor: "#81868b5e",  
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}
-        >
-        <div className='SignupPage'>
-            <p style={{ width: "300px", margin: "10px auto", textAlign: "center",color:"purple",
-                        fontWeight: 900
-            }}
-                >Create Account</p>
-            <input
-                type='text'
-                placeholder='Username'
-                value={name}
-                onChange={(e)=>setName(e.target.value)}
-                style={{ width: "95%", padding: "10px",marginBottom:"20px"}}
-            />
-            <br></br>
-            <input
-                type='text'
-                placeholder='Password'
-                value={password}
-                onChange={(e)=>setPassword(e.target.value)}
-                style={{ width: "95%", padding: "10px",marginBotton:"20px"}}
-            />
+        <div className='container'>
+            <div className='box'>
+                <h1 className="heading"> Create Account </h1>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+                    <input
+                        type='text'
+                        placeholder='Username'
+                        value={name}
+                        onChange={(e)=>setName(e.target.value)}
+                        style={{ width: "95%", padding: "10px",marginBottom:"5px"}}
+                    />
+                    
+                    <input
+                        type='text'
+                        placeholder='Password'
+                        value={password}
+                        onChange={(e)=>setPassword(e.target.value)}
+                        style={{ width: "95%", padding: "10px",marginBottom:"5px"}}
+                    />
 
 
-            <button
-                onClick={handleSignup}
-                style={{ width: "100%", padding: "10px",marginTop:"20px"}}
-            >
-                Create
-            </button>
-            <button
-                onClick={moveBack}
-                style={{ width: "100%", padding: "10px",marginTop:"20px"}}
-            >
-                Back
-            </button>
-        </div>
+                    <button
+                        onClick={handleSignup}
+                        className='btn btn-purple'
+                    >
+                        Create
+                    </button>
+                    
+                    <button
+                        onClick={moveBack}
+                        className='btn btn-red'
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

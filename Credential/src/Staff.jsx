@@ -25,6 +25,10 @@ function Staff()
         navigate("/Schedule")
     }
 
+    const moveEdit=()=>{
+        navigate("/Edit")
+    }
+
     const moveBack=()=>{
         navigate('/')
     }
@@ -79,13 +83,13 @@ function Staff()
                 </button>
 
                 <button onClick={moveDisplay}
-                    className='btn btn-red'
+                    className='btn btn-green'
                     style={{ width: "100%", maxWidth: "260px" }}
                 >
                     Display
                 </button>
 
-                <button onClick={moveAddorRemove}
+                <button onClick={moveEdit}
                     className='btn btn-yellow'
                     style={{ width: "100%", maxWidth: "260px" }}
                 >
@@ -93,10 +97,10 @@ function Staff()
                 </button>
             
                 <button onClick={moveBack}
-                    className='btn btn-back'  
+                    className='btn btn-red'  
                     style={{ width: "100%", maxWidth: "260px" }} 
                 >
-                    Back
+                    Log Out
                 </button>
             </div>
 

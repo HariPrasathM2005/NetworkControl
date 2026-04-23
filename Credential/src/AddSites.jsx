@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState,useEffect } from 'react'
+import './Frontend.css';
 function AddSites(){
     const navigate=useNavigate()
 
@@ -10,7 +11,7 @@ function AddSites(){
     const [site, setSite] = useState("")
     const [sites, setSites] = useState([])
 
-    const addSite = () => {
+    /*const addSite = () => {
         if (!site) return
         setSites([...sites, site])
         setSite("")
@@ -23,7 +24,21 @@ function AddSites(){
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sites })   
         })
-    }
+    }*/
+   const addSite = async () => {
+        if (!site) return;
+
+        const updatedSites = [...sites, site];  // create new array
+        setSites(updatedSites);                 // update state
+        setSite("");
+
+        // send to backend
+        await fetch("http://localhost:5000/add-sites", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sites: updatedSites })
+        });
+    };
 
 
     
@@ -36,52 +51,40 @@ function AddSites(){
             .catch(err => console.error(err))
         }, [])
     return(
-        <div
-            style={{
-                backgroundColor: "#81868b5e",   // 👈 page background
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}
-        >
-        <div className='Homepage'>
-            <p>Add Sites to block/unblock</p>
-            <input 
-                    type='text'
-                    value={site}
-                    placeholder=''
-                    onChange={(e)=>setSite(e.target.value)}
-            />
+        <div className="container">
+            <div className="box">
+                <h1 className='heading'>Add Sites to Block</h1>
 
-            <button onClick={addSite}
-                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-            >
-                Add Site
-            </button>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
 
-            <button onClick={sendToBackend}
-                    style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-            >
-                Activate
-            </button>
+                    <input 
+                        type='text'
+                        value={site}
+                        placeholder=''
+                        onChange={(e)=>setSite(e.target.value)}
+                    />
 
-            
+                    <button onClick={addSite}
+                        className='btn btn-purple'
+                    >
+                        Add Site
+                    </button>
 
-            <button onClick={moveBack}
-                    style={{width:"100%",padding:"10px"}}
-            >
-                Back
-            </button>
+                    {/* <button onClick={sendToBackend}
+                            className='btn btn-yellow'
+                    >
+                        Activate
+                    </button>
+ */}
 
-            <ul>
-            {sites.length === 0 && <li>No sites blocked</li>}
+                    <button onClick={moveBack}
+                        className='btn btn-red'
+                    >
+                        Back
+                    </button>
 
-            {sites.map(site => (
-                <li key={site}>{site}</li>
-            ))}
-            </ul>
-        </div>
+                </div>
+            </div>
         </div>
     )
 }

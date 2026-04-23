@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import bg from "./ControlPage.jpg"
+import { useState,useEffect} from 'react'
 import './Frontend.css';
 function SchedulingPage()
 {
@@ -12,8 +11,43 @@ function SchedulingPage()
     const [scheduleList, setScheduleList] = useState([])
 
 
+    useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem("schedules")) || []
+        setScheduleList(stored)
+    }, [])
 
-    const addSchedule = async () => {
+    const addSchedule = () => {
+        if (!startTime || !endTime || !mode) {
+            alert("Please fill all fields")
+            return
+        }
+
+        if (startTime >= endTime) {
+            alert("Invalid time range")
+            return
+        }
+
+        const newSchedule = { startTime, endTime, mode }
+
+        const updated = [...scheduleList, newSchedule]
+
+        setScheduleList(updated)
+        localStorage.setItem("schedules", JSON.stringify(updated))
+
+        alert("Schedule added successfully")
+
+        setStartTime("")
+        setEndTime("")
+        setMode("")
+    }
+
+    const deleteSchedule = (index) => {
+        const updated = scheduleList.filter((_, i) => i !== index)
+        setScheduleList(updated)
+        localStorage.setItem("schedules", JSON.stringify(updated))
+    }
+
+    /*const addSchedule = async () => {
         if (!startTime || !endTime || !mode) {
             alert("Please fill all fields")
             return
@@ -55,27 +89,13 @@ function SchedulingPage()
                 console.error(error)
             }
     }
-
+*/
     const moveBack=()=>{
         navigate("/Staff")
     }
     return(
-        <div
-            style={{
-                minHeight: "20vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#f5f5f5"
-            }}>
-            <div style={{
-                width: "500px",
-                height: "400px",
-                padding: "5px",
-                background: "white",
-                borderRadius: "10px",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
-            }}>
+        <div className='container'>
+            <div className='box'>
 
                 <h1 className="heading">Scheduling</h1>
 
@@ -107,29 +127,28 @@ function SchedulingPage()
                 </select>
 
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "7px" }}>
-                <button onClick={addSchedule}
-                    className="btn btn-purple"
-                    style={{ width: "100%", maxWidth: "260px" }}>
-                    Add Schedule
-                </button>
+                    <button onClick={addSchedule}
+                        className="btn btn-purple"
+                        style={{ width: "100%", maxWidth: "260px" }}>
+                        Add Schedule
+                    </button>
 
-                {/* Display Schedules */}
-                <ul>
-                    {scheduleList.map((item, index) => (
-                        <li key={index}>
-                            {item.startTime} - {item.endTime} → {item.mode}
-                        </li>
-                    ))}
-                </ul>
+                    {/* Display Schedules */}
+                    <ul className="contents">
+                        {scheduleList.map((item, index) => (
+                            <li key={index}>
+                                {item.startTime} - {item.endTime} → {item.mode}
+                            </li>
+                        ))}
+                    </ul>
 
-                <button onClick={moveBack}
-                    className="btn btn-red"
-                    style={{ width: "100%", maxWidth: "260px" }}>
-                    
-                    Back
-                </button>
+                    <button onClick={moveBack}
+                        className="btn btn-red"
+                        style={{ width: "100%", maxWidth: "260px" }}>
+                        
+                        Back
+                    </button>
                 </div>
-
             </div>
         </div>
     )

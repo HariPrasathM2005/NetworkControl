@@ -22,6 +22,8 @@ function ModesPage()
                 body: JSON.stringify({ mode })
             })
 
+            localStorage.setItem("mode", mode);
+
             const data = await response.json()
             setStatus(data.message|| data.error)
             setSites(data.blocked_sites||[])
@@ -44,7 +46,7 @@ function ModesPage()
                     </button>
 
                     <button
-                        onClick={() => setMode("entertainment")}
+                        onClick={() => setMode("exam")}
                         className="btn btn-purple"
                     >
                         Exam Mode
