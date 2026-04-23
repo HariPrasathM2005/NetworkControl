@@ -7,6 +7,22 @@ function Staff()
     const navigate=useNavigate();
     const [status, setStatus] = useState("")
     const [sites, setSites]=useState([])
+
+    const syncSchedules = async () => {
+        const schedules = JSON.parse(localStorage.getItem("schedules")) || [];
+
+        await fetch("http://localhost:5000/sync-schedules", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ schedules })
+        });
+    };
+
+    useEffect(() => {
+        syncSchedules();
+    }, []);
     
     const moveMode=()=>{
         navigate("/Mode")
@@ -34,19 +50,6 @@ function Staff()
     }
 
     return(
-        <div
-        
-            style={{
-                backgroundImage: `url(${bg})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}
-            >
-                
         <div className='Staffpage' 
             style={{ maxWidth: "450px", 
             width: "100%", 
@@ -115,7 +118,7 @@ function Staff()
                 ))}
             </ul>
         </div>
-        </div>
+
     )
 }
 export default Staff

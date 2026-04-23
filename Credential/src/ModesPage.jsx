@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import './Frontend.css';
 
 function ModesPage()
@@ -7,7 +7,40 @@ function ModesPage()
     const navigate=useNavigate();
     const [status, setStatus] = useState("")
     const [sites, setSites]=useState([])
+    const [scheduleEnabled, setScheduleEnabled] = useState(false)
 
+    useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem("scheduleEnabled")) || false
+
+        setScheduleEnabled(stored)
+
+        // sync with backend
+        fetch("http://localhost:5000/enable-schedule", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ enabled: stored })
+        })
+    }, [])
+
+    const toggleSchedule = async () => {
+        const newValue = !scheduleEnabled
+
+        setScheduleEnabled(newValue)
+
+        // store in localStorage
+        localStorage.setItem("scheduleEnabled", JSON.stringify(newValue))
+
+        // send to backend
+        await fetch("http://localhost:5000/enable-schedule", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ enabled: newValue })
+        })
+    }
     const moveBack=()=>{
         navigate("/Staff")
     }
@@ -39,24 +72,40 @@ function ModesPage()
                 <h1 className='heading'>Mode Selection</h1>
                 <div className="button-group">
                     <button
-                        onClick={() => setMode("study")}
+                        onClick={() => {
+                            setMode("study");
+                            alert("Study Mode Activated");
+                        }}
                         className="btn btn-back"
                     >
                         Study Mode
                     </button>
 
                     <button
-                        onClick={() => setMode("exam")}
+                        onClick={() => {
+                            setMode("exam");
+                            alert("Exam Mode Activated");
+                        }}
                         className="btn btn-purple"
                     >
                         Exam Mode
                     </button>
 
                     <button
-                        onClick={() => setMode("entertainment")}
+                        onClick={() => {
+                            setMode("entertainment");
+                            alert("Entertainment Mode Activated");
+                        }}
                         className="btn btn-yellow"
                     >
                         Entertainment Mode (Unblock Sites)
+                    </button>
+
+                    <button
+                        onClick={toggleSchedule}
+                        className="btn btn-green"
+                    >
+                        {scheduleEnabled ? "Disable Schedule" : "Enable Schedule"}
                     </button>
 
                     <button onClick={moveBack}

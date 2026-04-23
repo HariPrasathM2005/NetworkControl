@@ -9,6 +9,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
+lock = threading.Lock()
 
 BLOCKED_SITES = [
     "instagram.com",
@@ -24,13 +25,14 @@ BLOCKED_SITES = [
 HOSTS_FILE = "/etc/hosts"
 REDIRECT_IP = "127.0.0.1"
 
-SCHEDULE_FILE = "schedules.json"
+schedule_enabled = False
 
-def load_schedules():
+
+def load_schedules(SCHEDULE_FILE_LocatStorage):
     global schedules
     print("running")
     try:
-        with open(SCHEDULE_FILE, "r") as f:
+        with open(SCHEDULE_FILE_LocatStorage, "r") as f:
             schedules = json.load(f)
     except:
         schedules = []
@@ -196,92 +198,97 @@ def remove_site():
         "blocked_sites": BLOCKED_SITES
     })
 
-@app.route("/set-schedule", methods=["POST"])
-def schedule():
-    try:
-        data = request.get_json(force=True)
 
-        mode = data.get("mode", "").lower()
-        startTime = data.get("startTime")
-        endTime = data.get("endTime")
-
-        if not mode or not startTime or not endTime:
-            return jsonify({"error": "Missing data"}), 400
-
-        if startTime >= endTime:
-            return jsonify({"error": "Invalid time range"}), 400
-
-        new_schedule = {
-            "mode": mode,
-            "startTime": startTime,
-            "endTime": endTime
-        }
-
-        schedules.append(new_schedule)
-
-        print("Schedule added:", new_schedule)
-
-        return jsonify({
-            "message": f"Schedule added for {mode}",
-            "schedules": schedules
-        })
-
-    except Exception as e:
-        print("ERROR:", e)
-        return jsonify({"error": "Server error"}), 500
-
-
-
-current_active_mode = None  # to avoid repeated execution
-schedules = []
-def scheduler_loop():
-    global current_active_mode
-
-    while True:
-        now = datetime.now().strftime("%H:%M")
-        matched_modes = []
-
-        for s in schedules:
-            if s["startTime"] <= now <= s["endTime"]:
-                matched_modes.append(s["mode"])
-
-        # Priority logic
-        if "exam" in matched_modes:
-            active_mode = "exam"
-        elif "study" in matched_modes:
-            active_mode = "study"
-        elif "entertainment" in matched_modes:
-            active_mode = "entertainment"
-        else:
-            active_mode = None
-
-        if active_mode != current_active_mode:
-            current_active_mode = active_mode
-
-            if active_mode == "study":
-                print(" STUDY MODE")
-                block_websites()
-
-            elif active_mode == "entertainment":
-                print("ENTERTAINMENT MODE")
-                unblock_websites()
-
-            elif active_mode == "exam":
-                print("EXAM MODE")
-                os.system("iptables -P OUTPUT DROP")
-
-            else:
-                print("No active schedule")
-
-
-        time.sleep(10)
 
 # Start background thread
 
-if __name__ == "__main__":
-    schedule=load_schedules()  # IMPORTANT
-    print("Loaded schedules:", schedule)
-    #scheduler_loop()
+def get_mode_from_schedule(schedules):
+    now = datetime.now().time()
 
-    threading.Thread(target=scheduler_loop, daemon=True).start()
+    for s in schedules:
+        start = datetime.strptime(s["startTime"], "%H:%M").time()
+        end = datetime.strptime(s["endTime"], "%H:%M").time()
+
+        if start <= now <= end:
+            return s["mode"]   # only mode
+
+    return None
+
+@app.route("/sync-schedules", methods=["POST"])
+def sync_schedules():
+    global schedules
+    data = request.get_json()
+    with lock:
+        schedules = data.get("schedules", [])
+
+    print("Schedules synced:", schedules)
+
+    mode=get_mode_from_schedule(schedules)
+    print("Current mode based on schedule:", mode)
+    if(schedule_enabled==True):
+        set_mode2(mode)
+
+
+    return jsonify({"message": "Schedules updated"})
+
+
+def set_mode2(mode):
+    data = request.get_json(force=True)
+
+    print("Mode received:", mode)
+
+    if mode == "study":
+        os.system("sudo iptables -P OUTPUT ACCEPT")
+        os.system("sudo iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT")
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+        os.system("sudo iptables -A INPUT -i lo -j ACCEPT")
+        block_websites()
+        blocked_entries = []
+        for site in BLOCKED_SITES:
+            blocked_entries.append(f"{REDIRECT_IP} {site}")
+        print("Websites blocked:", blocked_entries)
+
+        return jsonify({
+            "message": "Study mode enabled. Websites blocked.",
+            "blocked_sites": blocked_entries
+        })
+
+    elif mode == "entertainment":
+        unblock_websites()
+        os.system("sudo iptables -P OUTPUT ACCEPT")
+        os.system("sudo iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT")
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+        os.system("sudo iptables -A INPUT -i lo -j ACCEPT")
+        return jsonify({"message": "Entertainment mode enabled. Websites unblocked."})
+    
+    elif mode == "exam":
+        os.system("sudo iptables -P OUTPUT DROP")
+        os.system("sudo iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT")
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+
+        os.system("sudo iptables -A OUTPUT -o lo -j ACCEPT")
+        os.system("sudo iptables -A INPUT -i lo -j ACCEPT")
+        return jsonify({"message": "Exam mode enabled. All network traffic blocked."})
+
+    else:
+        return jsonify({"error": "Invalid mode"}), 400
+    
+
+    
+@app.route("/enable-schedule", methods=["POST"])
+def enable_schedule():
+    global schedule_enabled
+
+    data = request.get_json()
+    schedule_enabled = data.get("enabled", False)
+
+    print("Schedule mode:", schedule_enabled)
+
+    return jsonify({"message": "Schedule mode updated"})
+
+if __name__ == "__main__":
     app.run(port=5000, debug=False)

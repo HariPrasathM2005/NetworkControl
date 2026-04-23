@@ -25,6 +25,7 @@ function Signup()
 
             setName('');
             setPassword('');
+            alert("Account created successfully")
     }
 
     const moveBack=()=>{
