@@ -39,7 +39,7 @@ function RemoveSites(){
 
         // backend call
         try {
-            await fetch("http://localhost:5000/remove-sites", {
+            await fetch("http://localhost:5000/remove-site", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ site: removeSite })

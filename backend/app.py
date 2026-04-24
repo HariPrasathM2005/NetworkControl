@@ -38,6 +38,10 @@ def load_schedules(SCHEDULE_FILE_LocatStorage):
         schedules = []
     return schedules
 
+def normalize(site):
+    site = site.replace("https://", "").replace("http://", "")
+    return site.replace("www.", "").strip()
+
 def block_websites():
     with open(HOSTS_FILE, "r") as file:
         content = file.read()
@@ -47,6 +51,36 @@ def block_websites():
             entry = f"{REDIRECT_IP} {site}\n"
             if entry not in content:
                 file.write(entry)
+    os.system("resolvectl flush-caches")
+
+def block_websites2(Blocked_Sites):
+    with open(HOSTS_FILE, "r") as file:
+        content = file.read()
+
+    with open(HOSTS_FILE, "a") as file:
+        for site in Blocked_Sites:
+            entry = f"{REDIRECT_IP} {site}\n"
+            if entry not in content:
+                file.write(entry)
+    os.system("resolvectl flush-caches")
+
+def block_websites3(Blocked_Sites):
+    with open(HOSTS_FILE, "r") as file:
+        content = file.read()
+
+    with open(HOSTS_FILE, "a") as file:
+        for site in Blocked_Sites:
+            site = normalize(site)
+
+            entries = [
+                f"{REDIRECT_IP} {site}\n",
+                f"{REDIRECT_IP} www.{site}\n"
+            ]
+
+            for entry in entries:
+                if entry not in content:
+                    file.write(entry)
+
     os.system("resolvectl flush-caches")
 
 
@@ -60,6 +94,18 @@ def unblock_websites():
                 file.write(line)
     os.system("resolvectl flush-caches")
 
+def unblock_website2(site_to_remove):
+    site_to_remove = normalize(site_to_remove)
+
+    with open(HOSTS_FILE, "r") as file:
+        lines = file.readlines()
+
+    with open(HOSTS_FILE, "w") as file:
+        for line in lines:
+            if site_to_remove not in normalize(line):
+                file.write(line)
+
+    os.system("resolvectl flush-caches")
 
 def get_blocked_sites():
     blocked = []
@@ -144,6 +190,7 @@ def add_sites():
 
     print("New sites received:", new_sites)
 
+
     for site in new_sites:
         if site not in BLOCKED_SITES:
             BLOCKED_SITES.append(site)
@@ -186,12 +233,15 @@ def remove_site():
     data = request.get_json()
     site_to_remove = data.get("site")
 
-    if site_to_remove in BLOCKED_SITES:
+    '''if site_to_remove in BLOCKED_SITES:
         BLOCKED_SITES.remove(site_to_remove)
 
     # rewrite hosts file
     unblock_websites()
-    block_websites()
+    print("Updated blocked sites:", BLOCKED_SITES)
+    block_websites2(BLOCKED_SITES)'''
+
+    unblock_website2(site_to_remove)
 
     return jsonify({
         "message": "Site removed successfully",
